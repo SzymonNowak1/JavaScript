@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<audio id="audioW">
+  <source src="https://www.kakofonia.pl/PL/PLjanos/dajcie.wav" type="audio/wav"> 
+  Your browser does not support the audio element.
+</audio>
+
+<audio id="audioE">
+  <source src="https://www.kakofonia.pl/PL/PLjanos/muzyczka.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+<audio id="audioQ">
+   <source src="https://www.kakofonia.pl/PL/PLjanos/ubija.wav" type="audio/wav">
+  Your browser does not support the audio element.
+</audio>
+
+<audio id="audioR">
+ <source src="https://www.kakofonia.pl/PL/PLjanos/wisial.wav" type="audio/wav">
+  browser does not support the audio element.
+</audio>
+
+
+<p>Naciœnij klawisz 
+<p>
+<button onmousedown="document.getElementById('audioW').play()" onmouseup="pause()"> W </button>
+<button onmousedown="document.getElementById('audioE').play()" onmouseup="pause()"> E </button>
+<button onmousedown="document.getElementById('audioQ').play()" onmouseup="pause()"> Q </button>
+<button onmousedown="document.getElementById('audioR').play()" onmouseup="pause()"> R </button>
+
+<script>
+var w = document.getElementById("audioW"); 
+var q = document.getElementById("audioQ"); 
+var r= document.getElementById("audioR"); 
+var e= document.getElementById("audioE"); 
+
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    var charCode = evt.keyCode || evt.which;
+    var charStr = String.fromCharCode(charCode);
+    switch(charStr){
+    	case 'E': e.play(); 
+    		 break;
+        case 'W': w.play(); 
+    		 break;
+        case 'R': r.play(); 
+    		 break;
+        case 'Q': q.play(); 
+    		 break;
+    }
+}
+
+
+document.onkeyup = pause;
+function  pause() {
+    e.pause(); 
+    w.pause();
+    r.pause(); 
+    q.pause();
+}
+
+
+</script>
+
+</body>
+</html>

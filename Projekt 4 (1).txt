@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<body>
+<style>
+canvas { background: #eee; }
+</style>
+<div>
+
+<canvas id="myCanvas" width="480" height="320"></canvas>
+
+<script>
+var czas0 = Date.now() ;
+var canvas = document.getElementById("myCanvas");
+var ctx = canvas.getContext("2d");
+var x = canvas.width/2;
+var y = canvas.height-30;
+var dx = 0;
+var dy = 0;
+var promien=10;
+var level=1.2;
+var holeX0 = (canvas.width/2)-promien*level;
+var holeY0 = (canvas.height/2)-promien*level;
+var holeX1 = promien*level*2;
+var holeY1 = promien*level*2;
+
+function drawBall() {
+    ctx.beginPath();
+    ctx.arc(x, y, promien, 0, Math.PI*2);
+    ctx.fillStyle = "#0095DD";
+    ctx.fill();
+    ctx.closePath();
+}
+
+function drawHole() {
+ctx.fillStyle = "#000000";
+    ctx.rect(holeX0, holeY0, holeX1, holeY1);
+    ctx.stroke();
+}
+
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawHole();
+    drawBall();
+
+}
+var czas= setInterval(draw, 1);
+
+
+
+
+document.onkeydown = function(evt) {
+    evt = evt || window.event;
+    var charCode = evt.keyCode || evt.which;
+    var charStr = String.fromCharCode(charCode);
+    switch(charStr){
+    	case 'W': dy =-promien/2, dx=0; 
+    		 break;
+        case 'D': dx =promien/2, dy=0; 
+    		 break;
+        case 'S': dy=promien/2, dx=0; 
+    		 break;
+        case 'A': dx=-promien/2, dy=0;
+    		 break;
+    }
+    x += dx;
+    y += dy;
+    if(x>480 || x<-1 || y>320 || y<-1)
+    {
+        clearInterval(czas);
+    }
+     if(x>(holeX0+promien) && x<(holeX0+holeX1-promien) && y>(holeY0+promien) && y<(holeY0+holeY1-promien))
+    {
+		draw();
+        let czas1 = (Date.now()-czas0)/1000;
+        
+        alert("czasu uplyne³o:"+czas1);
+        clearInterval(czas);
+    }
+   
+    console.log(dx,dy,x,y);
+}
+
+
+document.onkeyup = function() {
+    dx=0, dy=0;
+  
+}
+
+</script> 
+</div>
+</body>
+</html>
