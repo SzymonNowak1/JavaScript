@@ -1,0 +1,200 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        .column-85 {
+            float: left;
+            width: 85%;
+        }
+
+        .column-15 {
+            float: left;
+            width: 15%;
+        }
+
+        .row:after {
+            content: "";
+            display: table;
+            clear: both;
+        }
+
+        .flex-container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+        }
+
+        .memo {
+            margin: 1rem;
+            padding: 1rem;
+            max-width: 16rem;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>
+        NotePocket
+    </h1>
+
+    <div class="row">
+        <div class="column-85">
+            <h3> Przypiête notatki: </h3>
+            <div class="flex-container" id="c-pinned">
+
+            </div>
+            <br />
+            <h3> Pozosta³e notatki: </h3>
+            <div class="flex-container" id="c-rest">
+
+            </div>
+        </div>
+
+        <div class="column-15">
+            <h3> Nowa notatka: </h3>
+            Tytu³: <input type="text" id="f-title"><br />
+            Treœæ: <textarea id="f-content" rows="5"></textarea><br />
+            Kolor: <input type="color" id="f-color" value="#ff0000"><br />
+            Przypiêta: <input type="checkbox" id="f-pinned"><br />
+
+            <button type="button" onclick="createMemo()">Dodaj notatkê</button>
+            <br />
+            <button type="button" onclick="removeMemos()">Usuñ wszystkie</button>
+
+        </div>
+
+    </div>
+			
+    <script type="text/javascript">
+		// Najbardziej starrany projekt ze wszystkich 
+	
+	
+	
+        // Konstruktor klasy Memo reprezentuj¹c¹ pojedyncz¹ notatkê
+        var Memo = function (title, content, color, pinned, created) {
+            this.title = title;
+            this.content = content;
+            this.color = color;
+            this.pinned = pinned;
+            this.created = created;
+        }
+		
+        // Metoda generuj¹ca dan¹ notatkê
+        Memo.prototype.generateDivElement = function () {
+            const div = document.createElement('div');
+            div.style.backgroundColor = this.color;
+
+            const header = document.createElement('h3');
+            header.appendChild(document.createTextNode(this.title));
+            div.appendChild(header);
+            div.appendChild(document.createTextNode(this.content));
+            div.className = 'memo';
+
+            const footer = document.createElement('footer');
+            footer.appendChild(document.createTextNode(this.created));
+            div.appendChild(footer);
+
+            return div;
+        }
+
+        // Konstruktor klasy MemosManager, która zarz¹dza wszystkimi notatkami
+        var MemosManager = function () {
+            this.loadedMemos = [];
+
+            this.loadFromLocalStorage();
+
+            this.renderMemos();
+        }
+
+        // Metoda dodaje now¹ notatkê do kolekcji
+        MemosManager.prototype.addMemo = function (memo) {
+            this.loadedMemos.push(memo);
+
+            // Zapisywanie do localStorage notatek
+            this.saveToLocalStorage();
+            this.loadFromLocalStorage(); 
+
+            // Wywo³aj rysowanie notatek
+            this.renderMemos();
+        }
+
+        // Metoda zapisuje notatki do localStorage w formie JSON
+        MemosManager.prototype.saveToLocalStorage = function () {
+            window.localStorage.setItem('memos', JSON.stringify(this.loadedMemos));
+        }
+
+        // Metoda wczytuje notatki z localStorage i zmienia JSON na 'pe³noprawne' obiekty
+        MemosManager.prototype.loadFromLocalStorage = function () {
+            const memos = window.localStorage.getItem('memos');
+            if (memos !== null) {
+                const arrayOfMemos = JSON.parse(memos);
+                // Obiekty po wczytaniu z JSON nie posiadaj¹ potrzebnych metod
+                arrayOfMemos.forEach(memo => {
+                    // Tutaj otrzymaj¹ na podstawie prototypu
+                    Object.setPrototypeOf(memo, Memo.prototype);
+                });
+
+                this.loadedMemos = arrayOfMemos;
+            }
+        }
+
+        // Metoda zarz¹dzaj¹ca renderowaniem notatek
+        MemosManager.prototype.renderMemos = function () {
+
+            // Pobranie przygotowanych w html kontenerów na notatki
+            const pinnedContainer = document.getElementById('c-pinned');
+            const restContainer = document.getElementById('c-rest');
+
+            // Renderujemy wszystkie notatki na nowo
+            while (pinnedContainer.firstChild) {
+                pinnedContainer.removeChild(pinnedContainer.firstChild);
+            }
+            while (restContainer.firstChild) {
+                restContainer.removeChild(restContainer.firstChild);
+            }
+
+            // Dla ka¿dej notatki generujemy jej diva i dodajemy do odpowiednich kontenerów
+            this.loadedMemos.forEach(memo => {
+                const div = memo.generateDivElement();
+                if (memo.pinned) {
+                    pinnedContainer.appendChild(div);
+                } else {
+                    restContainer.appendChild(div);
+                }
+            });
+        }
+
+        // Metoda czyszcz¹ca wszystkie notatki
+        MemosManager.prototype.removeMemos = function () {
+            this.loadedMemos = [];
+
+            this.saveToLocalStorage();
+            this.loadFromLocalStorage();
+
+            this.renderMemos();
+        }
+
+        // Utworzenie managera notatek
+        const manager = new MemosManager();
+
+        // Callback przycisku "Dodaj notatkê"
+        function createMemo() {
+            const title = document.getElementById('f-title').value;
+            const content = document.getElementById('f-content').value;
+            const color = document.getElementById('f-color').value;
+            const pinned = document.getElementById('f-pinned').checked;
+            const created = new Date();
+
+            manager.addMemo(new Memo(title, content, color, pinned, created));
+        }
+
+        // Callback przycisku "Usuñ wszystkie"
+        function removeMemos() {
+            manager.removeMemos();
+        }
+
+    </script>
+</body>
+
+</html>
